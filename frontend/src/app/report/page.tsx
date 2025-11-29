@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Camera, MapPin } from "lucide-react";
+import { Camera, MapPin, Navigation } from "lucide-react";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { AptosClient } from "aptos";
 import { MODULE_ADDRESS, MODULE_NAME, NODE_URL } from "@/constants";
@@ -13,26 +13,28 @@ export default function ReportPage() {
     const [location, setLocation] = useState("");
     const [category, setCategory] = useState("Pothole");
     const [description, setDescription] = useState("");
-    const [loading, setLoading] = useState(false);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [isLocating, setIsLocating] = useState(false);
 
-    const handleLocation = () => {
-        setLoading(true);
+    const handleGetLocation = () => {
+        setIsLocating(true);
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    setLocation(`${position.coords.latitude}, ${position.coords.longitude}`);
-                    setLoading(false);
+                    // Format: "Lat: 12.34, Lng: 56.78"
+                    const coords = `Lat: ${position.coords.latitude.toFixed(6)}, Lng: ${position.coords.longitude.toFixed(6)}`;
+                    setLocation(coords);
+                    setIsLocating(false);
                 },
                 (error) => {
                     console.error(error);
-                    setLoading(false);
-                    alert("Unable to retrieve your location");
+                    alert("Unable to retrieve location. Please enter manually.");
+                    setIsLocating(false);
                 }
             );
         } else {
-            setLoading(false);
-            alert("Geolocation is not supported by your browser");
+            alert("Geolocation not supported by this browser.");
+            setIsLocating(false);
         }
     };
 
@@ -91,7 +93,7 @@ export default function ReportPage() {
             <div className="space-y-2">
                 <h1 className="text-3xl font-bold text-teal-400">Report an Issue</h1>
                 <p className="text-slate-400">
-                    Spot a problem? Report it to earn points and help your city.
+                    Spot a problem? Report it to earn points.
                 </p>
             </div>
 
@@ -161,21 +163,26 @@ export default function ReportPage() {
                         Location
                     </label>
                     <div className="flex gap-2">
-                        <input
-                            type="text"
-                            value={location}
-                            readOnly
-                            placeholder="Coordinates"
-                            className="block w-full rounded-lg border-slate-600 bg-slate-900 text-slate-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5"
-                        />
+                        <div className="relative w-full">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <MapPin className="h-5 w-5 text-slate-500" />
+                            </div>
+                            <input
+                                type="text"
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                                placeholder="Enter address or click Get Location"
+                                className="block w-full pl-10 rounded-lg border-slate-600 bg-slate-900 text-slate-200 shadow-sm focus:border-teal-500 focus:ring-teal-500 sm:text-sm p-2.5"
+                            />
+                        </div>
                         <button
                             type="button"
-                            onClick={handleLocation}
-                            disabled={loading}
-                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-slate-900 bg-teal-500 hover:bg-teal-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50"
+                            onClick={handleGetLocation}
+                            disabled={isLocating}
+                            className="flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-lg text-sm font-medium transition-colors whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            <MapPin className="w-4 h-4 mr-2" />
-                            {loading ? "Locating..." : "Get Location"}
+                            <Navigation className="h-4 w-4" />
+                            {isLocating ? "Locating..." : "Get Location"}
                         </button>
                     </div>
                 </div>

@@ -94,9 +94,16 @@ export default function AdminPage() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-teal-400">Government Dashboard</h1>
-        <div className="bg-slate-800 px-4 py-2 rounded-lg text-slate-300 text-sm">
-          Pending Issues: <span className="font-bold text-white">{issues.length}</span>
+        <div>
+          <h1 className="text-3xl font-bold text-teal-400">Government Dashboard</h1>
+          <p className="text-slate-400">Verify and resolve reported issues.</p>
+        </div>
+        <div className="text-right text-xs font-mono text-slate-500 bg-slate-900 p-2 rounded border border-slate-800">
+          <p>Connected: {account?.address || "Not Connected"}</p>
+          <p>Expected Admin: {MODULE_ADDRESS}</p>
+          {account?.address !== MODULE_ADDRESS && (
+            <p className="text-red-400 font-bold mt-1">⚠️ NOT AUTHORIZED</p>
+          )}
         </div>
       </div>
 

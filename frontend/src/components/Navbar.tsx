@@ -19,6 +19,9 @@ export function Navbar() {
                 <Link href="/profile" className="hover:text-teal-400 transition-colors">
                     Profile
                 </Link>
+                <Link href="/leaderboard" className="hover:text-teal-400 transition-colors">
+                    Leaderboard
+                </Link>
                 <Link href="/admin" className="hover:text-teal-400 transition-colors text-amber-400">
                     Government
                 </Link>
